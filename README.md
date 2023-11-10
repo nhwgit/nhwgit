@@ -1,4 +1,9 @@
-### Hi there 👋
+###
+stack
+- C
+- assambly(nasm)
+- Java
+- etc
 
 <!--
 **nhwgit/nhwgit** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.

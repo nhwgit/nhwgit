@@ -1,6 +1,7 @@
 ###
 stack
 - C
+- C++(Algorihm 위주)
 - assambly(nasm)
 - Java
 - etc

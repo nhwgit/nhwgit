@@ -2,7 +2,7 @@
 https://github.com/nhwgit/skhuos
 
 2. sql interpreter: 메모장 기반 SQL 인터프리터를 개발했습니다. CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, FROM, WHERE(JOIN 포함), ORDER BY 등 핵심 SQL 명령어를 직접 구현했으며, NOT NULL, PRIMARY KEY, FOREIGN KEY 등의 제약 조건도 구현 했습니다.
-https://github.com/nhwgit/calculus_calculator](https://github.com/nhwgit/sql_interpreter
+https://github.com/nhwgit/sql_interpreter
 
 3. 미적분 계산기: HTML, CSS, JavaScript를 활용하여 미적분 계산기를 개발했습니다. 사용자가 x(x+2) + 3^x + (3x+4)(2x-6) - 4 와 같은 수식을 입력하면, 미분계수 및 정적분 값을 계산하는 기능을 구현하였습니다. 이 과정에서 정규표현식을 이용한 수식 변환 로직을 설계하였으며, 이를 통해 웹 개발에 대한 기본적인 이해뿐만 아니라 복잡한 수학 연산을 코드로 변환하는 기술을 익혔습니다.
 https://github.com/nhwgit/calculus_calculator

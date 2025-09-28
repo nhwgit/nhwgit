@@ -2,7 +2,7 @@
 https://github.com/nhwgit/skhuos
 
 2. 숏코딩: 백준 온라인 저지 최고 난이도인 ‘루비 티어’ 문제 중, 가장 많은 사람이 푼 문제의 ‘숏코딩’ 1등 <br>
-문제: https://www.acmicpc.net/short/status/10350
+문제: https://www.acmicpc.net/short/status/10350 <br>
 소스코드: https://github.com/nhwgit/shortCoding
 
 3. sql interpreter: 메모장 기반 SQL 인터프리터를 개발했습니다. CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, FROM, WHERE(JOIN 포함), ORDER BY 등 핵심 SQL 명령어를 직접 구현했으며, NOT NULL, PRIMARY KEY, FOREIGN KEY 등의 제약 조건도 구현 했습니다.

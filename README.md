@@ -15,4 +15,4 @@ https://github.com/nhwgit/calculus_calculator
 https://github.com/nhwgit/PEViewer
 
 6. 웹 기반 1:1 고스톱게임(구현중): 현재 Spring WebFlux와 WebSocket을 활용한 실시간 1:1 고스톱 게임을 개발 중입니다. 주요 게임 로직은 구현이 마무리단계이며, 코드 리팩토링, 보안, 대기실 서버/인증 서버와의 연동, 간단한 프론트엔드 개발, 로깅 기능(게임 리플레이) 추가, 성능 최적화 등을 진행하려 합니다. 본 프로젝트를 통해 비동기 처리 및 실시간 통신 기술을 익히며, 확장 가능한 서버 설계를 고민하는 경험을 쌓고 있습니다.
-https://github.com/nhwgit/poming_matgo
+https://github.com/nhwgit/poming_matgo_be

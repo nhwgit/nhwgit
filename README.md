@@ -5,13 +5,12 @@ https://github.com/nhwgit/skhuos
 문제: https://www.acmicpc.net/short/status/10350 <br>
 소스코드: https://github.com/nhwgit/shortCoding
 
-3. 웹 기반 1:1 고스톱게임(구현중)
+3. 웹 기반 1:1 고스톱게임(구현중) https://github.com/poming-matgo
 - Spring WebFlux: 턴제 게임 특성상 idle time이 길어지는 점을 고려하여 스레드 효율성이 높은 event-driven모델 사용
 - DDOS  방어: eBPF(xdp)를 도입하여 NIC 드라이버 단에서 악성 패킷을 조기 차단. OS 네트워크 스택 진입 전 부하를 제거함으로서, Netty EventLoop의 가용성을 물리적으로 보호
 - Race Condition 제어: 서버 지연 시 발생하는 타임아웃 스케줄러와 유저 액션간의 충돌 문제 해결. 병목 상황에서도 스케줄러가 유저의 유효한 요청을 우선 인지하여 비정상적인 자동 플레이를 차단하도록 로직 구현
-https://github.com/poming-matgo
 
-4. 추상대수학 기반 OOP 스터디 자료 직접 설계 및 구현
+4. 추상대수학 기반 OOP 스터디 자료 직접 설계 및 구현 https://github.com/nhwgit/Algebraic-OOP-Graph
 - 내용: "추상대수와 객체지향은 본질적으로 같다"는 철학을 바탕으로, 동료 개발자들의 CS/수학적 사고력 향상을 위해 직접 설계한 대수 구조 기반의 그래프 알고리즘 라이브러리
 - 대수학의 OOP 매핑 (패턴 통합): 추상대수학의 Monoid, Semiring 구조를 Java의 제네릭, 전략 패턴, DI 등과 1:1로 매핑하여, 수학적 추상화가 어떻게 소프트웨어의 OCP로 직결되는지 코드로 증명함.
 - 알고리즘의 수학적 통합 (다형성): 경로의 수, 최단 경로', 도달 가능성’이라는 3가지 이질적인 그래프 문제를 단 하나의 행렬 거듭제곱 알고리즘으로 통합. 상태만 교체하여 동일한 로직이 완벽히 다른 문제를 푸는 구조 완성

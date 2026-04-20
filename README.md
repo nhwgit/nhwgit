@@ -7,7 +7,7 @@
 
 ## 🛠️ Projects & Achievements
 
-### 🎮 [웹 기반 1:1 고스톱 게임 서버](https://github.com/poming-matgo)
+### 🎮 [웹 기반 1:1 고스톱 게임 서버](https://github.com/poming-matgo/poming_matgo_be)
 > **트래픽 병목 해소 및 WebFlux 기반의 무결점 동시성 제어**
 * **초저지연 I/O 아키텍처 설계** 
   * 분산 환경의 오버헤드를 줄이고자 Redis 의존성을 제거하고 `ConcurrentHashMap` 기반 로컬 데이터 구조로 개편.

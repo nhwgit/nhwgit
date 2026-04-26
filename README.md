@@ -24,8 +24,10 @@
 ## 🚀 Projects
 
 ### 🎮 [웹 1:1 고스톱 게임 서버](https://github.com/poming-matgo/poming_matgo_be)
-백엔드(https://github.com/poming-matgo/poming_matgo_be)
-프론트(https://github.com/poming-matgo/poming_matgo_fe)
+[백엔드](https://github.com/poming-matgo/poming_matgo_be)
+
+[프론트](https://github.com/poming-matgo/poming_matgo_fe)
+
 실시간 양방향 통신이 필요한 1:1 카드 게임 서버
 
 - Redis 의존성을 제거하고 `ConcurrentHashMap` 기반 로컬 구조로 전환 → **초당 약 68,000건의 웹소켓 메시지 무손실 처리 (Redis 구성 대비 6.6배)**

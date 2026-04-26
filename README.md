@@ -26,7 +26,7 @@
 ### 🎮 [웹 1:1 고스톱 게임 서버](https://github.com/poming-matgo/poming_matgo_be)
 [백엔드](https://github.com/poming-matgo/poming_matgo_be)
 
-[프론트](https://github.com/poming-matgo/poming_matgo_fe)
+[프론트](https://github.com/poming-matgo/PomingMatgo_fe)
 
 실시간 양방향 통신이 필요한 1:1 카드 게임 서버
 

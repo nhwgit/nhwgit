@@ -47,7 +47,7 @@
 `C` `Assembly`
 
 ### 🏆 [백준(BOJ) 숏코딩 전체 1위](https://github.com/nhwgit/shortCoding)
-[BOJ 1006](https://www.acmicpc.net/short/status/1006) · [10350번](https://www.acmicpc.net/short/status/10350) **숏코딩 전체 1위**
+**숏코딩 전체 1위**
 
 - Ruby 인터프리터의 바이트코드 동작 분석 → 시간 초과 회피와 코드 길이 최소화의 트레이드오프 지점 도출
 - 루프 내 메서드 호출 오버헤드를 포착해 `i=-~i%n` → `(i+=1)%n` 으로 리팩토링, 글자 수 × 실행 속도 최적점 달성

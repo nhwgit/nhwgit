@@ -46,14 +46,22 @@ WebFlux 논블로킹 환경에서 실시간 양방향 통신을 처리하는 1:1
 
 `C` `Assembly`
 
-### 🔐 [제로트러스트 접근제어 게이트웨이](https://github.com/nhwgit/zero_trust)
-NIST SP 800-207 기준 PEP/PDP/PIP를 직접 구현. Keycloak JWT 검증 후 데이터플레인 게이트웨이(PEP)가 PDP 정책 결정을 시행
+## 🔐 [제로트러스트 접근제어 게이트웨이](https://github.com/nhwgit/zero_trust)
 
-- **지속 검증 / 위험 적응 인가** — PIP가 위험 점수(IP 변화·요청 레이트 등)를 산출, 위험 상승 시 능동 캐시 무효화로 재로그인 없이 `ALLOW → DENY` 전이 (다중 게이트웨이는 Redis pub/sub)
-- **패킷 레벨 관측** — netns + `tcpdump`로 서비스 간 mTLS를 캡처해 상호 인증을 와이어로 입증, `tc netem`으로 L4 장애(지연/손실)를 주입해 재전송·p99 진단
-- **운영/테스트** — RED 지표 + Grafana, 요청 ID 분산 추적, PDP 장애 fail-close 재현, k6 부하 검증, Testcontainers(Keycloak) e2e
+NIST SP 800-207 기준 PEP/PDP/PIP를 직접 구현. Keycloak JWT 검증 후 데이터플레인
+게이트웨이(PEP)가 PDP 정책 결정을 시행하고, 위험 판단을 커널 레벨 트래픽 제어(XDP)까지 연결
 
-`Java` `Spring Cloud Gateway` `Keycloak` `mTLS` `Prometheus/Grafana` `Redis` `Docker`
+- **지속 검증 / 위험 적응 인가** — PIP가 위험 점수(IP 변화·요청 레이트 등)를 산출, 위험 상승 시
+  능동 캐시 무효화로 재로그인 없이 `ALLOW → DENY` 전이 (다중 게이트웨이는 Redis pub/sub)
+- **커널 레벨 트래픽 제어 (eBPF/XDP)** — XDP가 per-source-IP SYN 카운트를 PIP 위험 신호로
+  올리고(관측), PIP의 차단 지시(deny + TTL)를 커널 deny map에 반영해 위험 IP 패킷을 스택 진입
+  전 드랍(집행). 판단은 PIP, 집행은 커널 — 동일 SYN 플러드에서 게이트웨이 CPU **108% → 0.2%**
+- **패킷 레벨 관측** — netns + `tcpdump`로 서비스 간 mTLS를 캡처해 상호 인증을 와이어로 입증,
+  `tc netem`으로 L4 장애(지연/손실)를 주입해 재전송·p99 진단
+- **운영/테스트** — RED 지표 + Grafana, 요청 ID 분산 추적, PDP 장애 fail-close 재현, k6 부하
+  검증, Testcontainers(Keycloak) e2e
+
+`Java` `Spring Cloud Gateway` `Keycloak` `eBPF/XDP` `Go` `mTLS` `Prometheus/Grafana` `Redis` `Docker`
 
 ### 📝 교육 SaaS 백엔드 단독 개발 *(프리랜서)*
 강사·학생용 퀴즈 출제/채점 백엔드를 단독 설계·구현·납품 *(A사 발주 / B사 수주)*

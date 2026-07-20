@@ -3,7 +3,7 @@
 > **"근본까지 파고들어 직접 확인한다" — 시스템을 이해하고 만드는 백엔드 개발자**
 
 작곡 전공 수석(선화예중)에서 IT 전공 수석 졸업(성공회대, 4.49/4.5)으로 — 도메인이 바뀌어도 본질을 파고드는 방식은 변하지 않았습니다.
-부트로더부터 파일시스템까지 OS를 직접 구현하며 동시성과 I/O를 **시스템 아키텍처 관점**에서 다루는 시각을 길렀고, 같은 시각으로 Java 비동기 서버의 race condition을 계층별 방어로 풀어 **초당 68,000건을 무손실 처리**했습니다.
+부트로더부터 파일시스템까지 OS를 직접 구현하며 동시성과 I/O를 **시스템 아키텍처 관점**에서 다루는 시각을 길렀고, 같은 시각으로 Java 비동기 서버의 race condition을 계층별 방어로 풀어 **동시접속 10,000에서 초당 약 88,700건(피크 95,310건)을 에러 0건으로 처리**했습니다.
 
 ---
 
@@ -17,9 +17,9 @@
 ## 🛠️ Tech Stack
 
 **Language** &nbsp;`Java` `Python` `C` `Ruby` `Assembly`
-**Backend** &nbsp;`Spring Boot (MVC)` `Spring Boot (WebFlux)` `JPA` `QueryDSL` `FastAPI`
-**Data** &nbsp;`MySQL` `PostgreSQL (pgvector)` `Redis`
-**Infra** &nbsp;`Docker` `AWS` `Spring Cloud Gateway` `Keycloak`
+**Backend** &nbsp;`Spring Boot (MVC)` `Spring Boot (WebFlux)` `JPA` `QueryDSL`
+**Data** &nbsp;`MySQL` `Redis`
+**Infra** &nbsp;`Docker` `AWS` `Spring Cloud Gateway` `Keycloak` `eBPF/XDP`
 
 ---
 
@@ -30,38 +30,35 @@
 
 WebFlux 논블로킹 환경에서 실시간 양방향 통신을 처리하는 1:1 카드 게임 서버
 
-- **계층적 동시성 설계** — `k6`로 동시접속 10,000 부하를 걸어 race condition 발생 지점을 찾고, 도메인 로직 → In-Flight 플래그(유저 > 자동플레이) → AOP 턴 직렬화 → 스케줄러(시퀀스 기반 Task 교체)로 책임을 분리해 방어
-- **I/O 병목 제거 (처리량 6.6배)** — 1:1 세션 상태가 휘발성·단일 인스턴스 귀속이라는 도메인 특성에 착안, Redis를 `ConcurrentHashMap`으로 대체해 **초당 약 68,000건 무손실 처리** (Profile 분리로 Redis 롤백도 가능)
-- **타이머 신뢰성** — 서버 측 유예 시간 + `Monotonic Clock`으로 NTP 동기화 오류·시스템 시간 변경에 영향받지 않는 타임아웃 구현
+- **검증 가능한 성능** — WS 동접 10,000(방 5,000개)에서 **sustain 평균 약 88,700 msg/s (1초 피크 95,310)**, 게임 액션 RTT **P99 125ms**, 에러·무응답 타임아웃 **0건**. k6 콘솔 추정치 대신 서버가 직접 세는 1초 단위 실측 계측을 구현하고, 측정 한계까지 방법론으로 공개
+- **계층적 동시성 설계 (layered defense)** — In-Flight fail-fast(`NORMAL`/`AUTOPLAY` 키 분리 + 소유 토큰 검증) → `@GameLock` AOP 직렬화 + 락 내부 fresh 재검증(final guard) → 타이머 정체성을 `TurnStep(round, turn, phase)`으로 표현한 atomic swap 스케줄러로 책임을 분리해 자동플레이 ↔ 유저 요청 race를 방어
+- **EventLoop를 멈추지 않는 락** — 방 단위 `Semaphore` + `boundedElastic` 격리 + `Mono.usingWhen` 해제 보장으로, 블로킹 락이 유발하는 EventLoop 기아 상태를 차단
+- **I/O 병목 제거 (처리량 6.6배)** — 1:1 세션 상태가 휘발성·단일 인스턴스 귀속이라는 도메인 특성에 착안, Redis를 `ConcurrentHashMap`으로 대체해 직렬화·네트워크 비용 제거 (Profile 분리로 Redis 분산 구성 전환 가능)
+- **liveness까지 검증** — 두 플레이어가 완전 방치해도 자동플레이만으로 게임이 완주되는 **AFK 기능 테스트**, 이탈/재접속의 세션 경합 3단 방어, 단위 테스트로는 못 잡는 리액티브 assembly 시점 eager 평가 회귀를 E2E 부하 테스트로 추적·해결
 
-`Java` `Spring WebFlux` `WebSocket` `Redis` `k6` `React`
+`Java 21` `Spring WebFlux` `WebSocket` `Redis` `k6` `InfluxDB/Grafana` `React`
 
-### 💻 [SKHU OS — 운영체제 직접 구현](https://github.com/nhwgit/skhuos)
-하드웨어 부팅부터 애플리케이션 실행까지 가능한 독자 OS *(학부 캡스톤 · 2022.03 ~ 06)*
+### 💻 [skhuOS — 운영체제 직접 구현](https://github.com/nhwgit/skhuos)
+BIOS 부팅부터 셸·텍스트 에디터 실행까지 가능한 Intel x64 독자 OS *(2022 학부 캡스톤 제작 → 2026 개선)*
 
-- BIOS 부트로더, 16/32/64비트 모드 전환, GDT/IDT, 인터럽트 핸들러 직접 구현
-- PIT 타이머 기반 라운드 로빈 스케줄러 + 어셈블리 레벨 컨텍스트 스위칭
-- 스핀락 무한 루프 대기로 인한 CPU 낭비를 원자적 연산 + 즉각적 CPU 양보로 개선
-- PIO 모드 디스크 드라이버, FAT 구조 자체 파일 시스템, 시스템 콜
+- BIOS 부트로더(512B), 16→32→64비트 모드 전환(GDT·A20·페이징), IDT/PIC 인터럽트 처리, PIT 기반 라운드 로빈 선점 스케줄러 + 어셈블리 컨텍스트 스위칭
+- **busy-wait 제거** — 스핀 대기 구조를 READY/BLOCKED 상태 모델 + 타이머 만료 큐 + `hlt` 전용 idle 프로세스로 재설계, CAS 기반 재진입 뮤텍스 구현
+- **디스크 드라이버 교정** — QEMU의 관대한 타이밍에 잠복해 있던 ATA 대기 규정 위반을 프로토콜대로 바로잡고, 고정 횟수 스핀을 PIT 스톱워치 기반 **시간 타임아웃**으로 교체 → 인터럽트 구동 PIO 전환. FAT 구조 자체 파일 시스템
+- **잠복 버그의 근본 추적** — 커널 `.bss`가 부팅 내내 초기화된 적 없던 최고참 버그를 QEMU GDB 스텁 + 하드웨어 워치포인트로 기록 순간까지 포착해 해결, 계층 의존 규칙은 관례가 아닌 Makefile `layering-check`로 매 빌드마다 강제
 
-`C` `Assembly`
+`C` `NASM Assembly` `QEMU`
 
-## 🔐 [제로트러스트 접근제어 게이트웨이](https://github.com/nhwgit/zero_trust)
+### 🔐 [제로트러스트 접근제어 게이트웨이](https://github.com/nhwgit/zero_trust)
 
-NIST SP 800-207 기준 PEP/PDP/PIP를 직접 구현. Keycloak JWT 검증 후 데이터플레인
-게이트웨이(PEP)가 PDP 정책 결정을 시행하고, 위험 판단을 커널 레벨 트래픽 제어(XDP)까지 연결
+NIST SP 800-207 기준 PEP/PDP/PIP를 직접 구현. Keycloak JWT 검증 후 게이트웨이(PEP)가 PDP 정책 결정을 시행하고, 위험 판단을 커널 레벨 트래픽 제어(XDP)까지 연결
 
-- **지속 검증 / 위험 적응 인가** — PIP가 위험 점수(IP 변화·요청 레이트 등)를 산출, 위험 상승 시
-  능동 캐시 무효화로 재로그인 없이 `ALLOW → DENY` 전이 (다중 게이트웨이는 Redis pub/sub)
-- **커널 레벨 트래픽 제어 (eBPF/XDP)** — XDP가 per-source-IP SYN 카운트를 PIP 위험 신호로
-  올리고(관측), PIP의 차단 지시(deny + TTL)를 커널 deny map에 반영해 위험 IP 패킷을 스택 진입
-  전 드랍(집행). 판단은 PIP, 집행은 커널 — 동일 SYN 플러드에서 게이트웨이 CPU **108% → 0.2%**
-- **패킷 레벨 관측** — netns + `tcpdump`로 서비스 간 mTLS를 캡처해 상호 인증을 와이어로 입증,
-  `tc netem`으로 L4 장애(지연/손실)를 주입해 재전송·p99 진단
-- **운영/테스트** — RED 지표 + Grafana, 요청 ID 분산 추적, PDP 장애 fail-close 재현, k6 부하
-  검증, Testcontainers(Keycloak) e2e
+- **지속 검증 / 위험 적응 인가** — PIP가 설명 가능한 위험점수(IP 변화 hold 창·레이트 히스테리시스 등)를 산출, 위험 상승 시 **epoch 키-아웃 + 능동 캐시 무효화**로 재로그인 없이 `ALLOW → DENY` 전이. 모든 DENY 응답에 차단 사유(신호별 기여 점수)를 명시
+- **보안 재평가와 성능의 양립** — 위험적응 TTL·레이트 밴드 트리거·고아 sweep을 갖춘 결정 캐시로 처리량 **+63% (9,010 → 14,681 rps)**, p99 −17%, 신선도 장치를 켠 상태에서도 캐시 히트율 99.7% 유지를 k6로 검증
+- **다중 게이트웨이 정합성** — Redis pub/sub fan-out 무효화 + Lua 원자 스크립트 기반 **전역 레이트 집계**(윈도우 시계는 Redis `TIME`)로 폭주 희석·밴드 진동을 근원 차단, Redis 장애 시 warm standby 로컬 카운터로 fail-degraded
+- **커널 레벨 트래픽 제어 (eBPF/XDP)** — XDP가 per-source-IP SYN 카운트를 PIP 위험 신호로 올리고(관측), PIP의 차단 지시(deny + TTL)를 커널 deny map에 반영해 위험 IP 패킷을 스택 진입 전 드랍(집행). 판단은 PIP, 집행은 커널 — 동일 SYN 플러드에서 게이트웨이 CPU **108% → 0.2%**
+- **와이어 레벨 검증** — netns + `tcpdump`로 mTLS 상호 인증(CertificateRequest·양방향 CN 교환)을 패킷에서 입증, `tc netem` 장애 주입으로 재전송·p99 진단, PDP 장애 fail-close 스모크, Testcontainers e2e
 
-`Java` `Spring Cloud Gateway` `Keycloak` `eBPF/XDP` `Go` `mTLS` `Prometheus/Grafana` `Redis` `Docker`
+`Java 21` `Spring Cloud Gateway` `Keycloak` `eBPF/XDP` `Go` `mTLS` `Prometheus/Grafana` `Redis` `Docker`
 
 ### 📝 교육 SaaS 백엔드 단독 개발 *(프리랜서)*
 강사·학생용 퀴즈 출제/채점 백엔드를 단독 설계·구현·납품 *(A사 발주 / B사 수주)*
@@ -71,6 +68,7 @@ NIST SP 800-207 기준 PEP/PDP/PIP를 직접 구현. Keycloak JWT 검증 후 데
 - **하네스 엔지니어링** — AI 에이전트에 명세·검증·권한 경계를 부여하는 하네스를 설계하고, 사람이 정의한 검증 루프로 산출물 품질을 통제하며 전 모듈을 단기간에 구현
 
 `Java` `Spring Boot` `MySQL` `JPA` `QueryDSL` `Docker` `Claude Code`
+
 ---
 
 ## 🧩 Special — 호기심에서 출발한 프로젝트

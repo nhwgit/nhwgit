@@ -36,7 +36,7 @@ WebFlux 논블로킹 환경에서 실시간 양방향 통신을 처리하는 1:1
 - **I/O 병목 제거 (처리량 6.6배)** — 1:1 세션 상태가 휘발성·단일 인스턴스 귀속이라는 도메인 특성에 착안, Redis를 `ConcurrentHashMap`으로 대체해 직렬화·네트워크 비용 제거 (Profile 분리로 Redis 분산 구성 전환 가능)
 - **liveness까지 검증** — 두 플레이어가 완전 방치해도 자동플레이만으로 게임이 완주되는 **AFK 기능 테스트**, 이탈/재접속의 세션 경합 3단 방어, 단위 테스트로는 못 잡는 리액티브 assembly 시점 eager 평가 회귀를 E2E 부하 테스트로 추적·해결
 
-`Java 21` `Spring WebFlux` `WebSocket` `Redis` `k6` `InfluxDB/Grafana` `React`
+`Java 21` `Spring WebFlux` `WebSocket` `Redis` `k6` `React`
 
 ### 💻 [skhuOS — 운영체제 직접 구현](https://github.com/nhwgit/skhuos)
 BIOS 부팅부터 셸·텍스트 에디터 실행까지 가능한 Intel x64 독자 OS *(2022 학부 캡스톤 제작 → 2026 개선)*
